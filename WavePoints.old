@@ -1,0 +1,209 @@
+
+public class WavePoint extends WavePanel{
+  
+  public void init(){
+    xSize = width;
+    float xDif = xSize / 12.0;
+    
+    xPos = xDif;
+    xSize -= 2.0 * xDif;
+    
+    yDif = 5;
+    
+  }
+  
+  
+  public WavePoint(){
+    super(0);
+    
+    
+    size = 10;
+    pointsNum = 70;
+    
+    
+    erreger = new Erreger[]{
+      new Erreger(0, 0, 5)
+      //new Erreger(0, 0, 10)
+    };
+    
+    pointCol = 255;
+    erregerCol = color(255, 0, 0);
+    
+    time = 0;
+    
+    lEnd = 0;
+    rEnd = 0; // 0 = infinite, fest, lose,     
+  }
+  
+  
+  int lEnd, rEnd;
+  
+  float time;
+  
+  
+  Erreger[] erreger;
+  
+  int erregerCol, pointCol;
+  int pointsNum;
+  
+  
+  float yDif;
+  
+  float size;
+  
+  float xPos, xSize;
+  
+  public void render(){
+    super.render();
+    renderLines();
+    
+    float xS = xSize / (pointsNum - 1.0);
+    
+    
+    float yLvl, yMax;
+    yLvl = yPos + panelSize / 2.0;
+    yMax = (panelSize - panelSize / yDif) / 2.0;
+    
+    for(int i = 0; i < erreger.length; i ++){
+      erreger[i].setLaneLength(xS);
+    }
+    
+    float y;
+    for(int i = 0; i < pointsNum; i ++){
+      float yWave = calcWave(i * xS, time);
+      
+      if(isPos(i)){
+        fill(erregerCol);
+      } else {
+        fill(pointCol);
+      }
+      
+      
+      y = yLvl + yWave * yMax;
+      if(y - size / 2.0 > yPos && y + size / 2.0 < yPos + panelSize)
+      ellipse(xPos + i * xS, y, size, size);
+    }
+    
+    
+    
+    // tick
+    
+    
+    
+  }
+  
+  
+  public void tick(){
+    time ++;
+    
+  }
+  
+  
+  
+  public void renderLines(){
+    float y = panelSize / yDif;
+    
+    
+    line(xPos, yPos + y, xPos, yPos + panelSize - y);
+    
+    y = yPos + panelSize / 2.0;
+    line(xPos, y, xPos + xSize, y);
+    
+  }
+  
+  public float calcWave(float pos, float time){
+    float rV = 0;
+    for(int i = 0; i < erreger.length; i ++){
+      rV += erreger[i].calcWave(pos, time);
+    }
+    
+    return rV;
+  }
+  
+  
+  public boolean isPos(int pos){
+    for(int i = 0; i < erreger.length; i ++){
+      if(erreger[i].isPos(pos)){
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  
+  
+}
+
+
+public class Erreger{
+  
+  public boolean isPos(int pos){
+    return this.pos == pos;
+  }
+  
+  
+  
+  public Erreger(int lEnd, int rEnd, int pos){
+    this.pos = pos;
+    this.lEnd = lEnd;
+    this.rEnd = rEnd;
+    
+    f = 0.03;
+    c = 1;
+    
+  }
+  
+  int pos;
+  
+  float f, c;
+  int lEnd, rEnd;
+  
+  public void setLaneLength(float lane){
+    this.lane = pos * lane;
+  }
+  
+  float lane;
+  
+  public float calcWave(float pos, float time){
+    float x;
+    float rV = 0;
+    
+    time *= c;
+    
+    
+    
+    if(lEnd == 0){
+      
+      // test wether its there?
+      x = abs(pos - lane);
+      
+      
+      
+      if(x > time){
+        return 0;
+      }
+      
+      
+      x -= time;
+      
+      rV = sin(x * f);
+      
+      
+      
+    } else if(lEnd == 1){
+      // needs to check how far the wave is at that time...
+      // x is how far it got
+      x = time;
+      // then work from the back. 
+      // so where x is 0 it is f(0) and 
+      rV = sin(x);
+    }
+    
+    
+    // we need time, wellenlänge, ausbreitungsV, f
+    
+    
+    return rV;
+  }
+  
+}
