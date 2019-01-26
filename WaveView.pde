@@ -124,6 +124,7 @@ public class WaveView extends But{
       float e = (erregerPos - xPos) * fac;
       float a = amp * ySize / 200.0;
       fac = trager / (isLine - 1);
+      println(amp);
       /*
         x      = 
         trager = ySize
@@ -137,7 +138,7 @@ public class WaveView extends But{
         
         // amp = ySize / 2.0
         //y = getY(i, isLine, amp, time, trager, f, c, lEnd, rEnd); // TODO expand prly
-        y = getWave(i * fac, e, t, a, f, c, lEnd, rEnd);
+        y = getWave(i * fac, e, t, a, f, c, lEnd, rEnd, trager);
         // i * fac, e
         ellipse(xPos + xEnd + i * lS, yy  - y, size, size);
       }
@@ -190,13 +191,26 @@ public class WaveView extends But{
     return maxY * function(rV);
   }
   
-  public float getWave(float pos, float erregerPos, float time, float amp, float f, float c, int lEnd, int rEnd){
+  public float getWave(float pos, float erregerPos, float time, float amp, float f, float c, int lEnd, int rEnd, float trager){
     float rV = calcWavePoint(amp, time, c, abs(erregerPos - pos), f);
     float toAdd = 0;
-    if(lEnd != 0){
-      toAdd = calcWavePoint(amp, time, c, abs(erregerPos - pos), f);
+    if(lEnd != 2){
+      toAdd = calcWavePoint(amp, time, c, abs(erregerPos + pos), f);
+      if(lEnd == 0){
+        toAdd *= -1;
+      }
     }
     
+    rV += toAdd;
+    
+    if(rEnd != 2){
+      toAdd = calcWavePoint(amp, time, c, abs((trager - erregerPos) + (trager - pos)), f);
+      if(rEnd == 0){
+        toAdd *= -1;
+      }
+    }
+    
+    rV += toAdd;
     return rV;
   }
   

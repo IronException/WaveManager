@@ -2,7 +2,8 @@
 // setting
 boolean dontRenderInf = false;
 
-
+// TODO when editing it shall show the content rn
+// TODOD update pics
 
 float pSize, panelSize, xSubSize;
 
